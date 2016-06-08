@@ -3,7 +3,7 @@ from cached_property import cached_property
 
 
 COLORS = {
-    'icon': '#oaf',
+    'icon': '#0af',
     'text': '#eee',
     'separator': '#6c6c6c',
     'info': '#af0',
