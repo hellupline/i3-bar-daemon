@@ -1,12 +1,12 @@
 from cached_property import cached_property_with_ttl
-from ..base import WidgetMixin
+from ..base import WidgetMixin, pallete
 
 BAT_FILE = '/sys/class/power_supply/{}/{}'
 fmt = '{}%'.format
 
 
 class Widget(WidgetMixin):
-    colors = ['#f00', '#ff0', '#af0', '#0fa', '#eee']
+    colors = pallete(('danger', 'warning', 'info', 'text'))
     icons = ['', '', '', '', '', '']
     name = 'battery'
 

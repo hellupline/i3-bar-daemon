@@ -1,10 +1,10 @@
 import os
 from cached_property import cached_property_with_ttl
-from ..base import WidgetMixin
+from ..base import WidgetMixin, COLORS
 
 
 class Widget(WidgetMixin):
-    color = '#f00'
+    color = COLORS['danger']
     icon = '☢'
     fmt = '{:.2f}'.format
     name = 'load-average'

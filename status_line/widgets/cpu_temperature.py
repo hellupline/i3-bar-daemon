@@ -1,11 +1,11 @@
 from cached_property import cached_property_with_ttl
-from ..base import WidgetMixin
+from ..base import WidgetMixin, COLORS
 
 THERMAL_FILE = '/sys/class/thermal/thermal_zone{}/temp'
 
 
 class Widget(WidgetMixin):
-    color = '#f00'
+    color = COLORS['danger']
     icon = '🌡'
     fmt = '{}°C'.format
     name = 'cpu-temperature'

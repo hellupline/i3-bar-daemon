@@ -4,7 +4,7 @@ from ..base import WidgetMixin
 
 
 class Widget(WidgetMixin):
-    color = '#666'
+    color = COLORS['fade']
     icon = ''
     name = 'wifi-ssid'
 

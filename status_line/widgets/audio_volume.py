@@ -1,10 +1,10 @@
 import pulsectl
 from cached_property import cached_property_with_ttl
-from ..base import WidgetMixin
+from ..base import WidgetMixin, COLORS
 
 
 class Widget(WidgetMixin):
-    color = '#666'
+    color = COLORS['fade']
     icons = ['', '🔊', '']
     fmt = '{}%'.format
     name = 'audio-volume'

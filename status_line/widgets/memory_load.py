@@ -1,12 +1,12 @@
 import psutil
 from cached_property import cached_property_with_ttl
-from ..base import WidgetMixin
+from ..base import WidgetMixin, COLORS
 
 STAT_FILE = '/proc/stat'
 
 
 class Widget(WidgetMixin):
-    color = '#f00'
+    color = COLORS['danger']
     icon = '☢'
     fmt = '{:.2f}%'.format
     name = 'memory-load'
