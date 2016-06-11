@@ -1,5 +1,0 @@
-cached-property
-psutil
-dbus-python
-mpris2
-pulsectl

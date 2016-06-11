@@ -1,15 +1,16 @@
 import html
 from cached_property import cached_property_with_ttl
 from mpris2 import get_players_uri, Player
-from ..base import WidgetMixin
+from ..base import WidgetMixin, DEFAULT_THEME
 
 
 class Widget(WidgetMixin):
-    fmt = '{album} - {title}'.format_map
     name = 'media-player'
 
-    def __init__(self, player=''):
+    def __init__(self, config, player='', fmt='{album} - {title}'):
         self.instance = self.player = player
+        self.fmt = fmt.format_map
+        super().__init__(config)
 
     def click(self, click):
         try:
@@ -24,20 +25,20 @@ class Widget(WidgetMixin):
     @cached_property_with_ttl(ttl=1)
     def state(self):
         metadata = self.get_metadata()
-        if not metadata:
+        if not metadata and self.config['hide_on_zero']:
             return ()
         return (
             self.make_icon({'text': '♪'}),
             self.make_text({'text': self.fmt(metadata)}),
-            self.separator,
+            self.make_separator(),
         )
 
     def get_metadata(self):
         # pylint: disable=unsubscriptable-object
         try:
             metadata = self.get_player().Metadata
-        except StopIteration:
-            return {}
+        except AttributeError:
+            return {'artist': '', 'album': '', 'title': ''}
         return {
             'artist': html.escape(', '.join(metadata['xesam:artist'])),
             'album': html.escape(str(metadata['xesam:album'])),
@@ -46,14 +47,30 @@ class Widget(WidgetMixin):
 
     def get_player(self):
         # pylint: disable=unexpected-keyword-arg
-        uri = next(get_players_uri('.+{}'.format(self.player)))
+        try:
+            uri = next(get_players_uri('.+{}'.format(self.player)))
+        except StopIteration:
+            return
         return Player(dbus_interface_info={'dbus_uri': uri})
 
     def previous(self):
-        self.get_player().Previous()
+        try:
+            self.get_player().Previous()
+        except AttributeError:
+            pass
 
     def next(self):
-        self.get_player().Next()
+        try:
+            self.get_player().Next()
+        except AttributeError:
+            pass
 
     def play_pause(self):
-        self.get_player().PlayPause()
+        try:
+            self.get_player().PlayPause()
+        except AttributeError:
+            pass
+
+
+if __name__ == '__main__':
+    print(Widget({**DEFAULT_THEME, 'hide_on_zero': False}).state)
