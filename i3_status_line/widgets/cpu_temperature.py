@@ -5,7 +5,6 @@ THERMAL_FILE = '/sys/class/thermal/thermal_zone{}/temp'
 
 
 class Widget(WidgetMixin):
-    icon = '🌡'
     fmt = '{}°C'.format
     name = 'cpu-temperature'
 
@@ -20,7 +19,7 @@ class Widget(WidgetMixin):
         if temperature < self.alert and self.show():
             return ()
         return (
-            self.make_icon({'text': self.icon}),
+            self.make_icon({'text': '🌡'}),
             self.make_text({
                 'color': self.get_color(temperature),
                 'text': self.fmt(temperature),

@@ -1,7 +1,7 @@
 import html
 from cached_property import cached_property_with_ttl
 from mpris2 import get_players_uri, Player
-from ..base import WidgetMixin, DEFAULT_THEME
+from ..base import WidgetMixin, debug
 
 
 class Widget(WidgetMixin):
@@ -73,4 +73,4 @@ class Widget(WidgetMixin):
 
 
 if __name__ == '__main__':
-    print(Widget({**DEFAULT_THEME, 'hide_on_zero': False}).state)
+    debug(Widget)

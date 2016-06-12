@@ -15,6 +15,8 @@ setup(
         'psutil',
         'dbus-python',
         'mpris2',
+        'pyalsaalddio',
+        'requests',
     ],
     zip_safe=True,
     entry_points={

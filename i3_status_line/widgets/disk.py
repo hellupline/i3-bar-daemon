@@ -4,7 +4,6 @@ from ..base import WidgetMixin, debug
 
 
 class Widget(WidgetMixin):
-    icon = ''
     fmt = '{}G'.format
     name = 'disk'
 

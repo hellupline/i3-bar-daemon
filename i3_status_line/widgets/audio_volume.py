@@ -4,7 +4,6 @@ from ..base import WidgetMixin, debug
 
 
 class Widget(WidgetMixin):
-    icons = ['', '', '']
     fmt = '{}%'.format
     name = 'audio-volume'
 
@@ -30,9 +29,8 @@ class Widget(WidgetMixin):
         if self.get_mute(mixer):
             return self.as_mute()
         volume = self.get_volume(mixer)
-        pos = {True: 0, False: 1}[volume < 25]
         return (
-            self.make_icon({'text': self.icons[pos]}),
+            self.make_icon({'text': self.get_icon(volume)}),
             self.make_text({'text': self.fmt(volume)}),
             self.make_separator(),
         )
