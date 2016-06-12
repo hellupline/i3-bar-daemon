@@ -43,11 +43,11 @@ class EventHandler:
         gevent.socket.wait_read(sys.stdin.fileno())  # noqa pylint: disable=no-member
         data = sys.stdin.readline()
         if data == '[\n':
-            gevent.socket.wait_read(sys.stdin.fileno())  # noqa pylint: disable=no-member
             data = sys.stdin.readline()
         return json.loads(data.lstrip(','))
 
     def send_click(self, event):
+        print(event, file=sys.stderr)
         try:
             key = event['name'], event['instance']
             widget = self.widgets_by_key[key]

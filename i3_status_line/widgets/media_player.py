@@ -7,7 +7,7 @@ from ..base import WidgetMixin, DEFAULT_THEME
 class Widget(WidgetMixin):
     name = 'media-player'
 
-    def __init__(self, config, player='', fmt='{album} - {title}'):
+    def __init__(self, config, player='', fmt='{artist} - {title}'):
         self.instance = self.player = player
         self.fmt = fmt.format_map
         super().__init__(config)
@@ -25,7 +25,7 @@ class Widget(WidgetMixin):
     @cached_property_with_ttl(ttl=1)
     def state(self):
         metadata = self.get_metadata()
-        if not metadata and self.config['hide_on_zero']:
+        if not metadata and self.show():
             return ()
         return (
             self.make_icon({'text': '♪'}),

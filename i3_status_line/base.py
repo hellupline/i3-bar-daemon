@@ -1,3 +1,6 @@
+import json
+
+
 BASE_BLOCK_SETTINGS = {
     'separator_block_width': 11,
     'separator': False,
@@ -45,12 +48,16 @@ DEFAULT_THEME = {'hide_on_zero': True, 'theme': {
 
 class WidgetMixin:
     name = instance = ''
+    state = ()
 
     def __init__(self, config):
         self.config = config
 
-    def pallete(self, keys):
-        return [*map(self.config['theme']['colors'].get, keys)]
+    def pallete(self, key):
+        return self.config['theme']['colors'][key]
+
+    def show(self):
+        return self.config['hide_on_zero']
 
     def _make_block(self, block, theme=None, settings=None):
         return make_block(block, theme=theme, settings={
@@ -85,3 +92,8 @@ def make_block(block, theme, settings):
             **(theme or {}), **block,
         })
     }
+
+
+def debug(widget_class):
+    widget = widget_class({**DEFAULT_THEME, 'hide_on_zero': False})
+    print(json.dumps(widget.state, indent=4))

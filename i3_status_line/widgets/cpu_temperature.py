@@ -1,5 +1,5 @@
 from cached_property import cached_property_with_ttl
-from ..base import WidgetMixin, DEFAULT_THEME
+from ..base import WidgetMixin, debug
 
 THERMAL_FILE = '/sys/class/thermal/thermal_zone{}/temp'
 
@@ -9,30 +9,36 @@ class Widget(WidgetMixin):
     fmt = '{}°C'.format
     name = 'cpu-temperature'
 
-    def __init__(self, config, core=0, alert=55):
+    def __init__(self, config, reading=0, alert=55):
+        self.reading = reading
         self.alert = alert
-        self.core = core
         super().__init__(config)
-        self.color, = self.pallete(['danger'])
 
     @cached_property_with_ttl(ttl=5)
     def state(self):
-        temp = self.cpu_temperature()
-        if temp < self.alert and self.config['hide_on_zero']:
+        temperature = self.cpu_temperature()
+        if temperature < self.alert and self.show():
             return ()
         return (
             self.make_icon({'text': self.icon}),
             self.make_text({
-                'color': self.color,
-                'text': self.fmt(temp),
+                'color': self.get_color(temperature),
+                'text': self.fmt(temperature),
             }),
             self.make_separator(),
         )
 
+    def get_color(self, temperature):
+        if temperature < 45:
+            return self.pallete('info')
+        elif temperature < 55:
+            return self.pallete('warning')
+        return self.pallete('danger')
+
     def cpu_temperature(self):
-        with open(THERMAL_FILE.format(self.core)) as f:
+        with open(THERMAL_FILE.format(self.reading)) as f:
             return int(f.read().strip()) // 1000
 
 
 if __name__ == '__main__':
-    print(Widget({**DEFAULT_THEME, 'hide_on_zero': False}).state)
+    debug(Widget)

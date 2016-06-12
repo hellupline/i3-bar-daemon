@@ -1,6 +1,6 @@
 import psutil
 from cached_property import cached_property_with_ttl
-from ..base import WidgetMixin, DEFAULT_THEME
+from ..base import WidgetMixin, debug
 
 SETTINGS = {'min_width': '0000 kB/s'}
 
@@ -22,7 +22,7 @@ class Widget(WidgetMixin):
 
     def get_sent(self, current):
         sent = (current.bytes_sent - self.old_meassure.bytes_sent) // 1024
-        if sent == 0 and self.config['hide_on_zero']:
+        if sent == 0 and self.show():
             return ()
         return (
             self.make_icon({'text': ''}),
@@ -32,7 +32,7 @@ class Widget(WidgetMixin):
 
     def get_recv(self, current):
         recv = (current.bytes_recv - self.old_meassure.bytes_recv) // 1024
-        if recv == 0 and self.config['hide_on_zero']:
+        if recv == 0 and self.show():
             return ()
         return (
             self.make_icon({'text': ''}),
@@ -42,4 +42,4 @@ class Widget(WidgetMixin):
 
 
 if __name__ == '__main__':
-    print(Widget({**DEFAULT_THEME, 'hide_on_zero': False}).state)
+    debug(Widget)

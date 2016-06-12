@@ -1,33 +1,37 @@
 import psutil
 from cached_property import cached_property_with_ttl
-from ..base import WidgetMixin, DEFAULT_THEME
+from ..base import WidgetMixin, debug
 
 
 class Widget(WidgetMixin):
-    icon = ''
     fmt = '{:.2f}%'.format
     name = 'cpu-load'
 
     def __init__(self, config, alert=30):
         self.alert = alert
         super().__init__(config)
-        self.colors = self.pallete(['info', 'warning', 'danger'])
 
     @cached_property_with_ttl(1)
     def state(self):
         load = psutil.cpu_percent()
-        if load < self.alert and self.config['hide_on_zero']:
+        if load < self.alert and self.show():
             return ()
-        pos = int(load // 50)
         return (
-            self.make_icon({'text': self.icon}),
+            self.make_icon({'text': ''}),
             self.make_text({
-                'color': self.colors[pos],
+                'color': self.get_color(load),
                 'text': self.fmt(load),
             }),
             self.make_separator(),
         )
 
+    def get_color(self, load):
+        if load > 75:
+            return self.pallete('danger')
+        elif load > 50:
+            return self.pallete('warning')
+        return self.pallete('info')
+
 
 if __name__ == '__main__':
-    print(Widget({**DEFAULT_THEME, 'hide_on_zero': False}).state)
+    debug(Widget)
