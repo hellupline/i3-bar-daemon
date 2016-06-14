@@ -67,22 +67,17 @@ class WidgetMixin:
         })
 
     def make_separator(self, theme=None, settings=None):
-        return self._make_block(block={}, settings=settings, theme={
-            **self.config['theme']['separator'],
-            **(theme or {}),
-        })
+        theme = {**self.config['theme']['separator'], **(theme or {})}
+        return self._make_block(block={}, settings=settings, theme=theme)
 
     def make_icon(self, block, theme=None, settings=None):
-        return self._make_block(block, settings=settings, theme={
-            **self.config['theme']['icon'],
-            **(theme or {}),
-        })
+        theme = {**self.config['theme']['icon'], **(theme or {})}
+        return self._make_block(block, settings=settings, theme=theme)
 
     def make_text(self, block, theme=None, settings=None):
-        return self._make_block(block, settings=settings, theme={
-            **self.config['theme']['text'],
-            **(theme or {}),
-        })
+        theme = {**self.config['theme']['text'], **(theme or {})}
+        # settings = {'short_text': '', **(settings or {})}
+        return self._make_block(block, settings=settings, theme=theme)
 
 
 def make_block(block, theme, settings):
