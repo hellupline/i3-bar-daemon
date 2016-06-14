@@ -9,7 +9,6 @@ import gevent.monkey
 import gevent.fileobject
 import gevent.socket
 
-gevent.monkey.patch_all(sys=True)  # noqa
 flatten = chain.from_iterable
 
 
