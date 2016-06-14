@@ -15,13 +15,13 @@ setup(
         'psutil',
         'dbus-python',
         'mpris2',
-        'pyalsaalddio',
+        'pyalsaaudio',
         'requests',
     ],
     zip_safe=True,
     entry_points={
         'console_scripts': [
-            'i3-status-line = i3_status_line.__main__:main'
+            'i3-status-line = i3_status_line.main:main'
         ]
     },
 )

@@ -1,10 +1,12 @@
+import gevent.monkey
+gevent.monkey.patch_all(sys=True)  # noqa
+
+# pylint: disable=wrong-import-order
 from functools import partial
+import argparse
 import json
 import os
 import signal
-import argparse
-
-import gevent
 
 from .core import EventHandler, load_widget
 
