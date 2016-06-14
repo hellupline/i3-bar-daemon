@@ -7,9 +7,6 @@ class Widget(WidgetMixin):
     fmt = '{:.2f}'.format
     name = 'load-average'
 
-    def __init__(self, config):
-        super().__init__(config)
-
     @cached_property_with_ttl(ttl=1)
     def state(self):
         one, five, fifteen = os.getloadavg()

@@ -27,6 +27,7 @@ class Widget(WidgetMixin):
         metadata = self.get_metadata()
         if not metadata and self.show():
             return ()
+        metadata = {'artist': '', 'album': '', 'title': '', **metadata}
         return (
             self.make_icon({'text': '♪'}),
             self.make_text({'text': self.fmt(metadata)}),
@@ -38,7 +39,7 @@ class Widget(WidgetMixin):
         try:
             metadata = self.get_player().Metadata
         except AttributeError:
-            return {'artist': '', 'album': '', 'title': ''}
+            return {}
         return {
             'artist': html.escape(', '.join(metadata['xesam:artist'])),
             'album': html.escape(str(metadata['xesam:album'])),
