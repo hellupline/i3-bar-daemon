@@ -31,7 +31,7 @@ class EventHandler:
             blocks = flatten(widget.state for widget in self.widgets)
             print(',', json.dumps(list(blocks)))
             sys.stdout.flush()
-            gevent.sleep(.1)
+            gevent.sleep(.5)
 
     def input_loop(self):
         while True:
