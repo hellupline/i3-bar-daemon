@@ -1,47 +1,37 @@
 from cached_property import cached_property_with_ttl
-from ..base import WidgetMixin, debug
+import i3_status_line.base as base
 
 BAT_FILE = '/sys/class/power_supply/{}/{}'
 
 
-class Widget(WidgetMixin):
-    fmt = '{}%'.format
+class Widget(base.WidgetMixin):
     name = 'battery-monitor'
 
-    def __init__(self, config, battery='BAT0'):
+    def __init__(self, theme, battery='BAT0'):
         self.instance = self.battery = battery
-        super().__init__(config)
+        super().__init__(theme)
 
-    @cached_property_with_ttl(ttl=1)
-    def state(self):
+    def render(self):
         capacity = self.battery_capacity()
-        if self.battery_status() != 'Discharging':
-            return self.as_charging(capacity)
-        return (
-            self.make_icon({'text': self.get_icon(capacity)}),
-            self.make_text({
-                'color': self.get_color(capacity),
-                'text': self.fmt(capacity),
-            }),
-            self.make_separator(),
-        )
-
-    def as_charging(self, capacity):
-        return (
-            self.make_icon({'text': ''}),
-            self.make_separator(),
+        status = self.battery_status()
+        return self._render_widget(
+            color=self.get_color(capacity),
+            icon=self.get_icon(capacity, status),
+            text='{}%'.format(capacity),
         )
 
     def get_color(self, capacity):
         if capacity < 20:
-            return self.pallete('danger')
+            return self._color('danger')
         elif capacity < 60:
-            return self.pallete('warning')
+            return self._color('warning')
         elif capacity < 80:
-            return self.pallete('info')
-        return self.pallete('text')
+            return self._color('info')
+        return self._color('text')
 
-    def get_icon(self, capacity):
+    def get_icon(self, capacity, status):
+        if status == 'Discharging':
+            return ''
         if capacity < 20:
             return ''
         elif capacity < 40:
@@ -60,6 +50,10 @@ class Widget(WidgetMixin):
         with open(BAT_FILE.format(self.battery, 'status')) as f:
             return f.read().strip()
 
+    @cached_property_with_ttl(ttl=5)
+    def state(self):
+        return self.render()
+
 
 if __name__ == '__main__':
-    debug(Widget)
+    base.debug(Widget)

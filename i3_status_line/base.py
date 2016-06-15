@@ -1,18 +1,57 @@
 import json
 
 
+class WidgetMixin:
+    use_icon_only_as_short_text = True
+    name = instance = ''
+
+    def __init__(self, theme):
+        self.theme = theme
+        self._looks = {
+            'separator': {**SEPARATOR, **self.theme['separator']},
+            'text': {**TEXT, **self.theme['text']},
+            'icon': {**ICON, **self.theme['icon']},
+        }
+
+    def _render_widget(self, color, icon, text, icon_only=False):
+        full = short = self._render_pango(
+            {'text': icon, 'color': color}, look_key='icon')
+        if not icon_only:
+            icon = self._render_pango({'text': icon}, look_key='icon')
+            text = self._render_pango(
+                {'text': text, 'color': color}, look_key='text')
+            full = '{icon}   {text}'.format(icon=icon, text=text)
+        return (
+            self._render_block(short=short, full=full),
+            self._render_sep(),
+        )
+
+    def _render_pango(self, body, look_key):
+        return SPAN({**self._looks[look_key], **body})
+
+    def _render_block(self, full, short=None, settings=None):
+        return {
+            **BASE_BLOCK_SETTINGS,
+            **(settings or {}),
+            'full_text': full,
+            'short_text': short or full,
+            'name': self.name,
+            'instance': self.instance,
+        }
+
+    def _render_sep(self, settings=None):
+        return self._render_block(full=SPAN(SEPARATOR), settings=settings)
+
+    def _color(self, key):
+        return self.theme['colors'][key]
+
+
 BASE_BLOCK_SETTINGS = {
     'separator_block_width': 11,
     'separator': False,
     'markup': 'pango',
     'align': 'right',
 }
-SPAN = (
-    "<span color='{color}'"
-    " font_style='{style}'"
-    " font_weight='{weight}'"
-    ">{text}</span>"
-)
 COLORS = {
     'separator': '#6c6c6c',
     'icon': '#0af',
@@ -22,6 +61,7 @@ COLORS = {
     'info': '#af0',
     'fade': '#666',
 }
+
 SEPARATOR = {
     'color': COLORS['separator'],
     'style': 'normal',
@@ -38,57 +78,21 @@ TEXT = {
     'style': 'normal',
     'weight': 'normal',
 }
-DEFAULT_THEME = {'hide_on_zero': True, 'theme': {
+DEFAULT_THEME = {
     'separator': SEPARATOR,
     'icon': ICON,
     'text': TEXT,
     'colors': COLORS,
-}}
+}
 
-
-class WidgetMixin:
-    name = instance = ''
-    state = ()
-
-    def __init__(self, config):
-        self.config = config
-
-    def pallete(self, key):
-        return self.config['theme']['colors'][key]
-
-    def show(self):
-        return self.config['hide_on_zero']
-
-    def _make_block(self, block, theme=None, settings=None):
-        return make_block(block, theme=theme, settings={
-            'name': self.name,
-            'instance': self.instance,
-            **(settings or {}),
-        })
-
-    def make_separator(self, theme=None, settings=None):
-        theme = {**self.config['theme']['separator'], **(theme or {})}
-        return self._make_block(block={}, settings=settings, theme=theme)
-
-    def make_icon(self, block, theme=None, settings=None):
-        theme = {**self.config['theme']['icon'], **(theme or {})}
-        return self._make_block(block, settings=settings, theme=theme)
-
-    def make_text(self, block, theme=None, settings=None):
-        theme = {**self.config['theme']['text'], **(theme or {})}
-        # settings = {'short_text': '', **(settings or {})}
-        return self._make_block(block, settings=settings, theme=theme)
-
-
-def make_block(block, theme, settings):
-    return {
-        **BASE_BLOCK_SETTINGS, **(settings or {}),
-        'full_text': SPAN.format_map({
-            **(theme or {}), **block,
-        })
-    }
+SPAN = (
+    "<span color='{color}'"
+    " font_style='{style}'"
+    " font_weight='{weight}'"
+    ">{text}</span>"
+).format_map
 
 
 def debug(widget_class):
-    widget = widget_class({**DEFAULT_THEME, 'hide_on_zero': False})
+    widget = widget_class(DEFAULT_THEME)
     print(json.dumps(widget.state, indent=4))

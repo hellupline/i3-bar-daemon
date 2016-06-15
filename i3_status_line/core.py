@@ -46,7 +46,6 @@ class EventHandler:
         return json.loads(data.lstrip(','))
 
     def send_click(self, event):
-        print(event, file=sys.stderr)
         try:
             key = event['name'], event['instance']
             widget = self.widgets_by_key[key]

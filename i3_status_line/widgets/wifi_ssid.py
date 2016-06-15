@@ -1,30 +1,23 @@
 from subprocess import check_output, CalledProcessError
+
 from cached_property import cached_property_with_ttl
-from ..base import WidgetMixin, debug
+import i3_status_line.base as base
 
 
-class Widget(WidgetMixin):
+class Widget(base.WidgetMixin):
     name = 'wifi-ssid'
 
-    @cached_property_with_ttl(ttl=5)
-    def state(self):
+    def render(self):
         ssid = self.get_ssid()
-        if not ssid:
-            return self.as_no_ssid()
-        return (
-            self.make_icon({'text': ''}),
-            self.make_text({'text': ssid}),
-            self.make_separator(),
+        return self._render_widget(
+            color=self.get_color(ssid),
+            icon='', text=ssid,
         )
 
-    def as_no_ssid(self):
-        return (
-            self.make_icon({
-                'color': self.pallete('fade'),
-                'text': '',
-            }),
-            self.make_separator(),
-        )
+    def get_color(self, ssid):
+        if not ssid:
+            return self._color('fade')
+        return self._color('text')
 
     def get_ssid(self):
         try:
@@ -32,6 +25,10 @@ class Widget(WidgetMixin):
         except CalledProcessError:
             return ''
 
+    @cached_property_with_ttl(ttl=5)
+    def state(self):
+        return self.render()
+
 
 if __name__ == '__main__':
-    debug(Widget)
+    base.debug(Widget)

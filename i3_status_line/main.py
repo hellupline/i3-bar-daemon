@@ -24,7 +24,7 @@ def main():
     with open(args.config) as f:
         config = json.load(f)
 
-    loader = partial(load_widget, config['config'])
+    loader = partial(load_widget, config['config']['theme'])
     widgets = list(map(loader, config['widgets']))
 
     handler = EventHandler(widgets)

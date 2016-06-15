@@ -1,7 +1,8 @@
 from functools import reduce
 import requests
+
 from cached_property import cached_property_with_ttl
-from ..base import WidgetMixin, debug
+import i3_status_line.base as base
 
 URL = 'https://query.yahooapis.com/v1/public/yql'
 ARGS = {
@@ -15,23 +16,21 @@ Q = (
 )
 
 
-class Widget(WidgetMixin):
-    fmt = '{temp}°{unit}'.format
+class Widget(base.WidgetMixin):
+    name = 'yahoo-weather'
 
-    def __init__(self, config, city='Curitiba', unit='C'):
+    def __init__(self, theme, city='Curitiba', unit='C'):
         self.instance = self.city = city
         self.unit = unit
-        super().__init__(config)
+        super().__init__(theme)
 
-    @cached_property_with_ttl(ttl=1800)
-    def state(self):
-        return (
-            self.make_icon({'text': ''}),
-            self.make_text({'text': self.fmt(
+    def render(self):
+        return self._render_widget(
+            color=self._color('text'),
+            icon='', text='{temp}°{unit}'.format(
                 temp=self.get_weather(),
                 unit=self.unit
-            )}),
-            self.make_separator(),
+            ),
         )
 
     def get_weather(self):
@@ -40,6 +39,10 @@ class Widget(WidgetMixin):
         r = requests.get(URL, params={**ARGS, 'q': q})
         return reduce(dict.get, [r.json(), *keys])
 
+    @cached_property_with_ttl(ttl=1800)
+    def state(self):
+        return self.render()
+
 
 if __name__ == '__main__':
-    debug(Widget)
+    base.debug(Widget)

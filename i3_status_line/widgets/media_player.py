@@ -1,38 +1,20 @@
 import html
-from cached_property import cached_property_with_ttl
 from mpris2 import get_players_uri, Player
-from ..base import WidgetMixin, debug
+
+from cached_property import cached_property_with_ttl
+import i3_status_line.base as base
 
 
-class Widget(WidgetMixin):
-    name = 'media-player'
-
-    def __init__(self, config, player='', fmt='{artist} - {title}'):
-        self.instance = self.player = player
+class PlayerControl:
+    def __init__(self, player='', fmt='{artist} - {title}'):
+        self.player = player
         self.fmt = fmt.format_map
-        super().__init__(config)
 
-    def click(self, click):
+    def get_text(self):
         try:
-            {
-                1: self.previous,
-                2: self.play_pause,
-                3: self.next,
-            }[click['button']]()
+            return self.fmt(self.get_metadata())
         except KeyError:
-            pass
-
-    @cached_property_with_ttl(ttl=1)
-    def state(self):
-        metadata = self.get_metadata()
-        if not metadata and self.show():
-            return ()
-        metadata = {'artist': '', 'album': '', 'title': '', **metadata}
-        return (
-            self.make_icon({'text': '♪'}),
-            self.make_text({'text': self.fmt(metadata)}),
-            self.make_separator(),
-        )
+            return ''
 
     def get_metadata(self):
         # pylint: disable=unsubscriptable-object
@@ -73,5 +55,35 @@ class Widget(WidgetMixin):
             pass
 
 
+class Widget(base.WidgetMixin):
+    name = 'media-player'
+
+    def __init__(self, theme, player='', fmt='{artist} - {title}'):
+        self.player_control = PlayerControl(player=player, fmt=fmt)
+        self.instance = player
+        super().__init__(theme)
+
+    def click(self, click):
+        try:
+            {
+                1: self.player_control.previous,
+                2: self.player_control.play_pause,
+                3: self.player_control.next,
+            }[click['button']]()
+        except KeyError:
+            pass
+
+    def render(self):
+        text = self.player_control.get_text()
+        return self._render_widget(
+            color=self._color('text'),
+            icon='♪', text=text,
+        )
+
+    @cached_property_with_ttl(ttl=5)
+    def state(self):
+        return self.render()
+
+
 if __name__ == '__main__':
-    debug(Widget)
+    base.debug(Widget)

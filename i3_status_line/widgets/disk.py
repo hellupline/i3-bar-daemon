@@ -1,39 +1,35 @@
 import psutil
+
 from cached_property import cached_property_with_ttl
-from ..base import WidgetMixin, debug
+import i3_status_line.base as base
 
 
-class Widget(WidgetMixin):
-    fmt = '{}G'.format
+class Widget(base.WidgetMixin):
     name = 'disk'
 
-    def __init__(self, config, path='/', alert=40):
+    def __init__(self, theme, path='/'):
         self.instance = self.path = path
-        self.alert = alert
-        super().__init__(config)
+        super().__init__(theme)
 
-    @cached_property_with_ttl(ttl=10)
-    def state(self):
+    def render(self):
         free_space = self.free_space()
-        if free_space > self.alert and self.show():
-            return ()
-        return (
-            self.make_icon({'text': ''}),
-            self.make_text({
-                'color': self.get_color(free_space),
-                'text': self.fmt(free_space)
-            }),
-            self.make_separator(),
+        return self._render_widget(
+            color=self.get_color(free_space),
+            icon='', text='{}G'.format(free_space),
         )
 
     def get_color(self, free_space):
         if free_space < 40:
-            self.pallete('danger')
-        return self.pallete('info')
+            self._color('danger')
+        return self._color('info')
 
     def free_space(self):
         return psutil.disk_usage(self.path).free // 1073741824  # 1024**3 (Gb)
 
+    @cached_property_with_ttl(ttl=5)
+    def state(self):
+        return self.render()
+
 
 if __name__ == '__main__':
-    debug(Widget)
+    base.debug(Widget)

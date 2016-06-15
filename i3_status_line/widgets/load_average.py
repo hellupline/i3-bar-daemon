@@ -1,32 +1,29 @@
 import os
+
 from cached_property import cached_property_with_ttl
-from ..base import WidgetMixin, debug
+import i3_status_line.base as base
 
 
-class Widget(WidgetMixin):
-    fmt = '{:.2f}'.format
+class Widget(base.WidgetMixin):
     name = 'load-average'
 
-    @cached_property_with_ttl(ttl=1)
-    def state(self):
+    def render(self):
         one, five, fifteen = os.getloadavg()
-        total_cpus = os.cpu_count()
-        if one < total_cpus and self.show():
-            return ()
-        return (
-            self.make_icon({'text': '☢'}),
-            self.make_text({
-                'color': self.get_color(one, total_cpus),
-                'text': self.fmt(one),
-            }),
-            self.make_separator(),
+        cpu_count = os.cpu_count()
+        return self._render_widget(
+            color=self.get_color(one, cpu_count),
+            icon='☢', text='{:.2f}'.format(one),
         )
 
     def get_color(self, value, total_cpus):
         if value > total_cpus:
-            return self.pallete('danger')
-        return self.pallete('info')
+            return self._color('danger')
+        return self._color('info')
+
+    @cached_property_with_ttl(ttl=5)
+    def state(self):
+        return self.render()
 
 
 if __name__ == '__main__':
-    debug(Widget)
+    base.debug(Widget)
