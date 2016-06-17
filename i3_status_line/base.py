@@ -22,7 +22,7 @@ class WidgetMixin:
             full = icon = self._render_pango(icon, look_key='icon')
             if text['text']:
                 text = self._render_pango(text, look_key='text')
-                full = '   '.join([icon, text])
+                full = '{}   {}'.format(icon, text)
         return (
             self._render_block(short=short, full=full),
             self._render_sep(),
