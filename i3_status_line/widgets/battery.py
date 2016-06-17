@@ -30,7 +30,7 @@ class Widget(base.WidgetMixin):
         return self._color('text')
 
     def get_icon(self, capacity, status):
-        if status == 'Discharging':
+        if status != 'Discharging':
             return ''
         if capacity < 20:
             return ''
