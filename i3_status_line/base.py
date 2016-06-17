@@ -17,10 +17,11 @@ class WidgetMixin:
         full = short = self._render_pango(
             {'text': icon, 'color': color}, look_key='icon')
         if not icon_only:
-            icon = self._render_pango({'text': icon}, look_key='icon')
-            text = self._render_pango(
-                {'text': text, 'color': color}, look_key='text')
-            full = '{icon}   {text}'.format(icon=icon, text=text)
+            full = icon = self._render_pango({'text': icon}, look_key='icon')
+            if text:
+                text = self._render_pango(
+                    {'text': text, 'color': color}, look_key='text')
+                full = '   '.join([icon, text])
         return (
             self._render_block(short=short, full=full),
             self._render_sep(),
