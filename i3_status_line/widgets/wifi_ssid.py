@@ -17,7 +17,6 @@ class Widget(base.WidgetMixin):
     def get_color(self, ssid):
         if not ssid:
             return self._color('fade')
-        return self._color('text')
 
     def get_ssid(self):
         try:

@@ -26,7 +26,6 @@ class Widget(base.WidgetMixin):
 
     def render(self):
         return self._render_widget(
-            color=self._color('text'),
             icon='', text='{temp}°{unit}'.format(
                 temp=self.get_weather(),
                 unit=self.unit

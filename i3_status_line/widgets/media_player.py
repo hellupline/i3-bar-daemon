@@ -75,10 +75,7 @@ class Widget(base.WidgetMixin):
 
     def render(self):
         text = self.player_control.get_text()
-        return self._render_widget(
-            color=self._color('text'),
-            icon='♪', text=text,
-        )
+        return self._render_widget(icon='♪', text=text)
 
     @cached_property_with_ttl(ttl=5)
     def state(self):

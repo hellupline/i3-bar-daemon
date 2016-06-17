@@ -27,7 +27,6 @@ class Widget(base.WidgetMixin):
             return self._color('warning')
         elif capacity < 80:
             return self._color('info')
-        return self._color('text')
 
     def get_icon(self, capacity, status):
         if status != 'Discharging':

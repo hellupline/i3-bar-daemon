@@ -7,10 +7,7 @@ import i3_status_line.base as base
 class Widget(base.WidgetMixin):
     def render(self):
         load = psutil.virtual_memory().percent
-        return self._render_widget(
-            color=self._color('text'),
-            icon='!', text='Hello World!',
-        )
+        return self._render_widget(icon='!', text='Hello World!')
 
     @cached_property_with_ttl(ttl=5)
     def state(self):

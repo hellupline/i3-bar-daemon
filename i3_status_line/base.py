@@ -13,14 +13,15 @@ class WidgetMixin:
             'icon': {**ICON, **self.theme['icon']},
         }
 
-    def _render_widget(self, color, icon, text, icon_only=False):
-        full = short = self._render_pango(
-            {'text': icon, 'color': color}, look_key='icon')
+    def _render_widget(self, icon, text, color=None, icon_only=False):
+        short, icon, text = {'text': icon}, {'text': icon}, {'text': text}
+        if color is not None:
+            short['color'], text['color'] = color, color
+        full = short = self._render_pango(short, look_key='icon')
         if not icon_only:
-            full = icon = self._render_pango({'text': icon}, look_key='icon')
-            if text:
-                text = self._render_pango(
-                    {'text': text, 'color': color}, look_key='text')
+            full = icon = self._render_pango(icon, look_key='icon')
+            if text['text']:
+                text = self._render_pango(text, look_key='text')
                 full = '   '.join([icon, text])
         return (
             self._render_block(short=short, full=full),

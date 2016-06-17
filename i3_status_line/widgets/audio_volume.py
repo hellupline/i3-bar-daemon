@@ -81,7 +81,6 @@ class Widget(base.WidgetMixin):
     def get_color(self):
         if self.volume_control.mute:
             return self._color('fade')
-        return self._color('text')
 
     def get_icon(self, volume):
         if volume == 0:
