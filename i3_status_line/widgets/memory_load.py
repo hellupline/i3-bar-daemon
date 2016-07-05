@@ -12,6 +12,7 @@ class Widget(base.WidgetMixin):
         return self._render_widget(
             color=self.get_color(load),
             icon='', text='{:.2f}%'.format(load),
+            icon_only=not self.show_text,
         )
 
     def get_color(self, load):

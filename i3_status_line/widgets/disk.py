@@ -16,6 +16,7 @@ class Widget(base.WidgetMixin):
         return self._render_widget(
             color=self.get_color(free_space),
             icon='', text='{}G'.format(free_space),
+            icon_only=not self.show_text,
         )
 
     def get_color(self, free_space):

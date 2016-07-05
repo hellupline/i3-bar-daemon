@@ -61,6 +61,7 @@ class Widget(base.WidgetMixin):
     def click(self, click):
         try:
             {
+                1: self.stamp_now,
                 3: self.volume_control.toggle_mute,
                 4: self.volume_control.increase,
                 5: self.volume_control.decrease,
@@ -76,6 +77,7 @@ class Widget(base.WidgetMixin):
                 color=self.get_color(),
                 icon=self.get_icon(volume),
                 text='{}%'.format(volume),
+                icon_only=not self.show_text,
             )
 
     def get_color(self):

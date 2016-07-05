@@ -1,3 +1,4 @@
+import time
 import json
 
 
@@ -12,6 +13,21 @@ class WidgetMixin:
             'text': {**TEXT, **self.theme['text']},
             'icon': {**ICON, **self.theme['icon']},
         }
+        self.time_stamp = 0
+
+    def click(self, click):
+        if click['button'] == 1:
+            self.stamp_now()
+        del self.state
+
+    @property
+    def show_text(self):
+        if time.time() - self.time_stamp < 10:
+            return True
+        return False
+
+    def stamp_now(self):
+        self.time_stamp = time.time()
 
     def _render_widget(self, icon, text, color=None, icon_only=False):
         short, icon, text = {'text': icon}, {'text': icon}, {'text': text}

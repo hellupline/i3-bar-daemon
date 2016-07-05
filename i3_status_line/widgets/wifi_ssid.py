@@ -12,6 +12,7 @@ class Widget(base.WidgetMixin):
         return self._render_widget(
             color=self.get_color(ssid),
             icon='', text=ssid,
+            icon_only=not self.show_text,
         )
 
     def get_color(self, ssid):

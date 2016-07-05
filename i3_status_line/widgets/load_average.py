@@ -13,6 +13,7 @@ class Widget(base.WidgetMixin):
         return self._render_widget(
             color=self.get_color(one, cpu_count),
             icon='☢', text='{:.2f}'.format(one),
+            icon_only=not self.show_text,
         )
 
     def get_color(self, value, total_cpus):

@@ -18,6 +18,7 @@ class Widget(base.WidgetMixin):
             color=self.get_color(capacity),
             icon=self.get_icon(capacity, status),
             text='{}%'.format(capacity),
+            icon_only=not self.show_text,
         )
 
     def get_color(self, capacity):
