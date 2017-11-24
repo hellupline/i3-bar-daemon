@@ -1,59 +1,35 @@
-from cached_property import cached_property_with_ttl
-import i3_status_line.base as base
+from typing import List
 
-BAT_FILE = '/sys/class/power_supply/{}/{}'
+import psutil
+
+from ..core import Widget, Block
 
 
-class Widget(base.WidgetMixin):
-    name = 'battery-monitor'
+class Battery(Widget):
+    name = 'battery'
 
-    def __init__(self, theme, battery='BAT0'):
-        self.instance = self.battery = battery
-        super().__init__(theme)
+    def render(self) -> List[Block]:
+        battery = psutil.sensors_battery()
+        i, c = self.get_icon, self.get_color_key
+        text = f'{battery.percent:.0f}%'
+        return self.simple_blocks(icon=i(battery), text=text, color_key=c(battery))
 
-    def render(self):
-        capacity = self.battery_capacity()
-        status = self.battery_status()
-        return self._render_widget(
-            color=self.get_color(capacity),
-            icon=self.get_icon(capacity, status),
-            text='{}%'.format(capacity),
-            icon_only=not self.show_text,
-        )
+    def get_color_key(self, battery) -> str:
+        if battery.percent < 25:
+            return 'danger'
+        elif battery.percent < 75:
+            return 'warning'
+        return 'info'
 
-    def get_color(self, capacity):
-        if capacity < 20:
-            return self._color('danger')
-        elif capacity < 60:
-            return self._color('warning')
-        elif capacity < 80:
-            return self._color('info')
-
-    def get_icon(self, capacity, status):
-        if status != 'Discharging':
+    def get_icon(self, battery) -> str:
+        if battery.power_plugged:
             return ''
-        if capacity < 20:
+        if battery.percent < 20:
             return ''
-        elif capacity < 40:
+        elif battery.percent < 40:
             return ''
-        elif capacity < 60:
+        elif battery.percent < 60:
             return ''
-        elif capacity < 80:
+        elif battery.percent < 80:
             return ''
         return ''
-
-    def battery_capacity(self):
-        with open(BAT_FILE.format(self.battery, 'capacity')) as f:
-            return int(f.read().strip())
-
-    def battery_status(self):
-        with open(BAT_FILE.format(self.battery, 'status')) as f:
-            return f.read().strip()
-
-    @cached_property_with_ttl(ttl=5)
-    def state(self):
-        return self.render()
-
-
-if __name__ == '__main__':
-    base.debug(Widget)

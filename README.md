@@ -1,13 +1,18 @@
-i3 Bar Daemon
+i3 Status Line
 =============
 
 
 Install
 -------
+
 ```bash
-  pip install https://github.com/hellupline/i3-status-line.git
-  wget -O ~/.i3-status-line.conf https://raw.githubusercontent.com/hellupline/i3-status-line/master/example/example1.config
+  pip install --user https://github.com/hellupline/i3-status-line.git
 ```
 
+
+i3 config
+---------
+
 in the bar section of your i3 config:
-  "status_command i3-status-line"
+
+>  status_command ~/.local/bin/i3-status-line

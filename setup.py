@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='i3-status-line',
@@ -8,20 +8,19 @@ setup(
     author_email='hellupline+i3@gmail.com',
     author='Renan Traba',
     license='MIT',
-    packages=['i3_status_line'],
+    packages=find_packages(),
     install_requires=[
-        'gevent',
         'cached-property',
         'psutil',
-        'dbus-python',
-        'mpris2',
-        'pyalsaaudio',
-        'requests',
+        # 'dbus-python',
+        # 'mpris2',
+        # 'pyalsaaudio',
+        # 'requests',
     ],
     zip_safe=True,
     entry_points={
         'console_scripts': [
-            'i3-status-line = i3_status_line.main:main'
+            'i3-status-line = i3_status_line.run:main'
         ]
     },
 )

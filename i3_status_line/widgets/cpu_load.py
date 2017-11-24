@@ -1,31 +1,43 @@
+from typing import List, Optional
+
 import psutil
 
-from cached_property import cached_property_with_ttl
-import i3_status_line.base as base
+from ..core import Widget, Icon, Block
 
 
-class Widget(base.WidgetMixin):
-    name = 'cpu-load'
+class CpuLoad(Widget):
+    name: str = 'cpu-load'
 
-    def render(self):
-        load = psutil.cpu_percent()
-        return self._render_widget(
-            color=self.get_color(load),
-            icon='', text='{:.2f}%'.format(load),
-            icon_only=not self.show_text,
-        )
+    def render(self) -> List[Block]:
+        load_per_cpu: List[float] = psutil.cpu_percent(percpu=True)
+        i, c = self.get_icon, self.get_color_key
 
-    def get_color(self, load):
-        if load > 75:
-            return self._color('danger')
-        elif load > 50:
-            return self._color('warning')
-        return self._color('info')
+        bars = [
+            Icon(text=i(load), color_key=c(load) or 'info')
+            for load in load_per_cpu
+        ]
+        return [Block(markup=[Icon(text=''), *bars])]
 
-    @cached_property_with_ttl(ttl=5)
-    def state(self):
-        return self.render()
+    def get_color_key(self, load: float) -> Optional[str]:
+        if load > 75.0:
+            return 'danger'
+        elif load > 50.0:
+            return 'warning'
+        return None
 
-
-if __name__ == '__main__':
-    base.debug(Widget)
+    def get_icon(self, load: float) -> str:
+        if load < 12.5:
+            return '▁'
+        if load < 25.0:
+            return '▂'
+        if load < 37.5:
+            return '▃'
+        if load < 50.:
+            return '▄'
+        if load < 62.5:
+            return '▅'
+        if load < 75.0:
+            return '▆'
+        if load < 87.2:
+            return '▇'
+        return '█'
